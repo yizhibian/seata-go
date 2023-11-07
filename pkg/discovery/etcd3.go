@@ -201,6 +201,8 @@ func getServerInstance(value []byte) (*ServiceInstance, error) {
 		Port: port,
 	}
 
+	log.Info("got serverInstance here")
+
 	return serverInstance, nil
 }
 
