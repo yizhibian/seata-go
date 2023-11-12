@@ -38,7 +38,7 @@ func TestEtcd3RegistryService_Lookup(t *testing.T) {
 			},
 		},
 		{
-			name:    "use watch update ServiceInstances",
+			name:    "use watch add ServiceInstances",
 			getResp: nil,
 			watchResponse: &clientv3.WatchResponse{
 				Events: []*clientv3.Event{
@@ -55,6 +55,38 @@ func TestEtcd3RegistryService_Lookup(t *testing.T) {
 				{
 					Addr: "172.0.0.1",
 					Port: 8091,
+				},
+			},
+		},
+		{
+			name: "use watch del ServiceInstances",
+			getResp: &clientv3.GetResponse{
+				Kvs: []*mvccpb.KeyValue{
+					{
+						Key:   []byte("registry-seata-default-172.0.0.1:8091"),
+						Value: []byte("172.0.0.1:8091"),
+					},
+					{
+						Key:   []byte("registry-seata-default-172.0.0.1:8092"),
+						Value: []byte("172.0.0.1:8092"),
+					},
+				},
+			},
+			watchResponse: &clientv3.WatchResponse{
+				Events: []*clientv3.Event{
+					{
+						Type: clientv3.EventTypeDelete,
+						Kv: &mvccpb.KeyValue{
+							Key:   []byte("registry-seata-default-172.0.0.1:8091"),
+							Value: []byte("172.0.0.1:8091"),
+						},
+					},
+				},
+			},
+			want: []*ServiceInstance{
+				{
+					Addr: "172.0.0.1",
+					Port: 8092,
 				},
 			},
 		},
